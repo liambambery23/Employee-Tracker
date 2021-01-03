@@ -46,7 +46,7 @@ function mainMenu() {
             break;
 
             case "View all employees by department":
-                viewDeparments();
+                viewDepartments();
             break;
 
             case "Update employess":
@@ -80,6 +80,15 @@ function viewEmployees() {
 function viewRoles() {
     connection.query("SELECT employee.first_name, employee.lastname, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
     function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        mainMenu();
+    })
+};
+
+function viewDepartments() {
+    connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN deparment ON role.department_id = department.id ORDER BY employee.id",
+    function(err, res) {
         if (err) throw err;
         console.table(res);
         mainMenu();
