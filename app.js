@@ -15,10 +15,10 @@ const connection = mysql.createConnection ({
 connection.connect (function(err) {
     if (err) throw err;
     console.log("Connected as ID" + connection.threadId);
-    start()
+    mainMenu()
 });
 
-function start() {
+function mainMenu() {
     inquirer.prompt([
       {
           type: listenerCount,
@@ -73,7 +73,16 @@ function viewEmployees() {
     function(err, res) {
         if (err) throw err;
         console.table(res);
-        start();
+        mainMenu();
+    })
+};
+
+function viewRoles() {
+    connection.query("SELECT employee.first_name, employee.lastname, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
+    function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        mainMenu();
     })
 };
 
