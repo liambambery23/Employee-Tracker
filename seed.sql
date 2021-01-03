@@ -18,7 +18,7 @@ VALUE ("Software Engineer", 80000, 2);
 INSERT INTO role (title, salary, department_id)
 VALUE ("Service Manager", 50000, 3);
 INSERT INTO role (title, salary, department_id)
-VALUE ("Customer Service Representative", 35000, 3);
+VALUE ("Product Specialist", 35000, 3);
 
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
 VALUE ("Frank", "Stabapolis", 1, 1);
