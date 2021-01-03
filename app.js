@@ -14,14 +14,14 @@ const connection = mysql.createConnection ({
 
 connection.connect (function(err) {
     if (err) throw err;
-    console.log("Connected as ID" + connection.threadId);
+    console.log("Connected as ID " + connection.threadId);
     mainMenu()
 });
 
 function mainMenu() {
     inquirer.prompt([
       {
-          type: listenerCount,
+          type: "list",
           message: "What would you like to do?",
           name: "operation",
           choices: [
@@ -36,34 +36,34 @@ function mainMenu() {
       }  
     ])
     .then(function(val) {
-        switch (val.choice) {
+        switch (val.operation) {
             case "View all employees":
                 viewEmployees();
-            break;
+                break;
 
             case "View all employees by role":
                 viewRoles();
-            break;
+                break;
 
             case "View all employees by department":
                 viewDepartments();
-            break;
+                break;
 
             case "Update employess":
                 updateEmployee();
-            break;
+                break;
 
             case "Add Employee":
                 addEmployee();
-            break;
+                break;
 
             case "Add role":
                 addRole();
-            break;
+                break;
 
             case "Add department":
                 addDeparment();
-            break;
+                break;
         }
     })
 };
@@ -78,7 +78,7 @@ function viewEmployees() {
 };
 
 function viewRoles() {
-    connection.query("SELECT employee.first_name, employee.lastname, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
+    connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
     function (err, res) {
         if (err) throw err;
         console.table(res);
@@ -87,11 +87,13 @@ function viewRoles() {
 };
 
 function viewDepartments() {
-    connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN deparment ON role.department_id = department.id ORDER BY employee.id",
+    connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN deparment ON role.department_id = department.id ORDER BY employee.id;",
     function(err, res) {
         if (err) throw err;
         console.table(res);
         mainMenu();
     })
 };
+
+
 
