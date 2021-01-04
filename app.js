@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const ctable = require("console.table");
 const { start } = require("repl");
+var employIdArr=[];
 
 
 const connection = mysql.createConnection ({
@@ -96,10 +97,10 @@ function viewDepartments() {
 
 let roleArray = [];
 function chooseRole() {
-    connection.query("SELECT * FROM role", function (err, res) {
+    connection.query("SELECT * FROM role_id", function (err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
-            roleArray.push(res[i].title);
+            roleArray.push(res[i].id);
         }
     });
     return roleArray;
@@ -107,15 +108,15 @@ function chooseRole() {
 
 let managersArray = [];
 function chooseManager() {
-    connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function (err, res) {
+    connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NOT NULL", function (err, res) {
         if (err) throw err;
         for (let i =0; i < res.length; i++) {
-            managersArray.push(res[i].first_name + " " + res[i].last_name);
+            managersArray.push(res[i].manager_id);
         }
     });
     return managersArray;
 };
-
+//make sure to create manager id and role id prior to creating employee
 function addEmployee() {
     inquirer.prompt([
         {
@@ -130,15 +131,15 @@ function addEmployee() {
         },
         {
             name: "role",
-            type: "list",
-            message: "Select the employees role",
-            choices: chooseRole()
+            type: "input",
+            message: "Select the employees role ID",
+            // choices: ["1","2"]//chooseRole()
         },
         {
             name: "manager",
-            type: "list",
-            message: "Who is the employees manager?",
-            choices: chooseManager()
+            type: "input",
+            message: "What is the employees manager ID?",
+            // choices:["1","2"] //chooseManager()
         },
     ])
     .then (function(val) {
@@ -158,13 +159,91 @@ function addEmployee() {
     });
 };
 
+function getEmployeeId(){
+    //make a communcation to db.. grab all employeeid
+    // connection.query("SELECT * FROM employee",
+    // function (err, res) {
+    //     if (err) throw err;
+    //    // console.log(res)
+
+    //     for(var i=0; i<res.length;i++){
+    //         employIdArr.push(res.id)
+    //     }
+    //     return employIdArr;
+    //      //store it into a cleaner array (map)
+    //     //  var employeIdArr = res.map( (curremploy =>({
+    //     //     name: curremploy.first_name + " "+ curremploy.last_name,
+    //     //    value:curremploy.id  
+    //     //  })))
+    //     //  return employeIdArr;
+      
+    // });
+
+   
+ 
+
+   
+    
+}
+
 function updateEmployee() {
-    console.log("This works")
+    inquirer.prompt([
+        {
+            name: "roleId",
+            type: "input",
+            message: "Choose a role"
+        },
+        {
+            name: "employeeId",
+            type: "input",
+            message: "Enter the employees ID"
+        },
+    ]).then(function(data){
+        console.log(data)
+        var query = connection.query(
+            "UPDATE employee SET ? WHERE ?",
+            [
+              {
+                role_id: data.roleId
+              },
+              {
+                id: data.employeeId
+              }
+            ],
+            function(err, res) {
+              if (err) throw err;
+              console.log("employee updated!");
+              mainMenu();
+            }
+          );
+        
+    })
+    //get employeeID
+    //  connection.query("SELECT * FROM employee",
+    // function (err, res) {
+    //     if (err) throw err;
+    //    // console.log(res)
+    //    for(var i=0;i<res.length;i++){
+    //        employIdArr.push(res.id);
+    //    }
+    //    console.log(employIdArr);
+    // });
+   //console.log(getEmployeeId());
+   //then call inquirer
+   //with id ask all the update q's
+//    var employee= await viewEmployees();
+//    var allEmployee= employee.map(({id, first_name})=>({
+//        name: first_name,
+//        value:id
+//    }));
+
+//    console.log(allEmployee)
+    
 };
 
 function addRole() {
     console.log("This works")
-};
+}
 
 function addDeparment() {
     console.log("This works")
