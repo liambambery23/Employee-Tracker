@@ -27,9 +27,9 @@ function mainMenu() {
           choices: [
               "View all employees",
               "View all employees by role",
-              "View all employees by departments",
-              "Update employee",
-              "Add employees",
+              "View all employees by department",
+              "Update employees",
+              "Add employee",
               "Add role",
               "Add department",
           ]
@@ -49,11 +49,11 @@ function mainMenu() {
                 viewDepartments();
                 break;
 
-            case "Update employess":
+            case "Update employees":
                 updateEmployee();
                 break;
 
-            case "Add Employee":
+            case "Add employee":
                 addEmployee();
                 break;
 
@@ -63,7 +63,6 @@ function mainMenu() {
 
             case "Add department":
                 addDeparment();
-                break;
         }
     })
 };
@@ -78,7 +77,7 @@ function viewEmployees() {
 };
 
 function viewRoles() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
+    connection.query("SELECT role.title, role.department_id, department.name AS Title FROM role LEFT JOIN department ON role.department_id = department.id",
     function (err, res) {
         if (err) throw err;
         console.table(res);
@@ -87,13 +86,86 @@ function viewRoles() {
 };
 
 function viewDepartments() {
-    connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN deparment ON role.department_id = department.id ORDER BY employee.id;",
-    function(err, res) {
+    connection.query("SELECT * FROM department",
+    function (err, res) {
         if (err) throw err;
         console.table(res);
         mainMenu();
     })
 };
 
+let roleArray = [];
+function chooseRole() {
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+        for (let i = 0; i < res.length; i++) {
+            roleArray.push(res[i].title);
+        }
+    });
+    return roleArray;
+}
 
+let managersArray = [];
+function chooseManager() {
+    connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function (err, res) {
+        if (err) throw err;
+        for (let i =0; i < res.length; i++) {
+            managersArray.push(res[i].first_name + " " + res[i].last_name);
+        }
+    });
+    return managersArray;
+};
 
+function addEmployee() {
+    inquirer.prompt([
+        {
+            name: "firstName",
+            type: "input",
+            message: "Enter the employees first name"
+        },
+        {
+            name: "lastName",
+            type: "input",
+            message: "Enter the employees last name"
+        },
+        {
+            name: "role",
+            type: "list",
+            message: "Select the employees role",
+            choices: chooseRole()
+        },
+        {
+            name: "manager",
+            type: "list",
+            message: "Who is the employees manager?",
+            choices: chooseManager()
+        },
+    ])
+    .then (function(val) {
+        connection.query("INSERT INTO employee SET ?",
+        {
+            first_name: val.firstName,
+            last_name: val.lastName,
+            role_id: val.role,
+            manager_id: val.manager,
+        },
+        function (err) {
+            if (err) throw err;
+            console.log("New Employee Added!");
+            mainMenu();
+        }
+    );
+    });
+};
+
+function updateEmployee() {
+    console.log("This works")
+};
+
+function addRole() {
+    console.log("This works")
+};
+
+function addDeparment() {
+    console.log("This works")
+};
