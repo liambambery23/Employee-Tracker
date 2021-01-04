@@ -132,7 +132,7 @@ function addEmployee() {
         {
             name: "role",
             type: "input",
-            message: "Select the employees role ID",
+            message: "Enter the employees role ID",
             // choices: ["1","2"]//chooseRole()
         },
         {
@@ -241,8 +241,48 @@ function updateEmployee() {
     
 };
 
+function showDept() {
+    connection.query("SELECT * FROM department",
+    function (err, res) {
+        if (err) throw err;
+        console.table(res);
+    }
+    )};
+
 function addRole() {
-    console.log("This works")
+    showDept();
+    inquirer.prompt([
+        {
+            name: "role",
+            type: "input",
+            message: "What is the new role you would like to add?"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "What is the salary for this role?"
+        },
+        {
+            name: "department",
+            type: "input",
+            message: "Enter the department ID",
+            // choices: ["1","2"]//chooseRole()
+        },
+    ])
+    .then (function(val) {
+        connection.query("INSERT INTO role SET ?",
+        {
+            title: val.role,
+            salary: val.salary,
+            department_id: val.department,
+        },
+        function (err) {
+            if (err) throw err;
+            console.log("New Role Added!");
+            mainMenu();
+        }
+    );
+    });
 }
 
 function addDeparment() {
