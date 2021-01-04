@@ -7,7 +7,7 @@ This project was created to simplify employee management within a company.
  
 ## Screenshots
 Below is a screenshot showing some of the functionality of this application. 
-![screenshot](assets/screenshot.png)
+![screenshot](/assets/screenshot)
 
 Also, here is a link to a video demonstrating the full functionality of the application. 
 [Video](https://drive.google.com/file/d/1piaNOaaIuVQgap3pYUWsGLJ3B4OJHyyF/view)
