@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const ctable = require("console.table");
 const { start } = require("repl");
-var departArr=[];
+
 
 
 const connection = mysql.createConnection ({
@@ -27,10 +27,10 @@ function mainMenu() {
           name: "operation",
           choices: [
               "View all employees",
-              "View all employees by role",
-              "View all employees by department",
-              "Update employees",
+              "View all roles",
+              "View all departments",
               "Add employee",
+              "Update employee role",
               "Add role",
               "Add department",
           ]
@@ -42,15 +42,15 @@ function mainMenu() {
                 viewEmployees();
                 break;
 
-            case "View all employees by role":
+            case "View all roles":
                 viewRoles();
                 break;
 
-            case "View all employees by department":
+            case "View all departments":
                 viewDepartments();
                 break;
 
-            case "Update employees":
+            case "Update employee role":
                 updateEmployee();
                 break;
 
@@ -69,7 +69,7 @@ function mainMenu() {
 };
 
 function viewEmployees() {
-    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, employee.manager_id, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
     function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -78,7 +78,7 @@ function viewEmployees() {
 };
 
 function viewRoles() {
-    connection.query("SELECT role.title, role.department_id, department.name AS Title FROM role LEFT JOIN department ON role.department_id = department.id",
+    connection.query("SELECT  role.id, role.title, role.department_id, department.name AS Title FROM role LEFT JOIN department ON role.department_id = department.id",
     function (err, res) {
         if (err) throw err;
         console.table(res);
@@ -95,8 +95,6 @@ function viewDepartments() {
     })
 };
 
-
-//make sure to create manager id and role id prior to creating employee
 function addEmployee() {
     inquirer.prompt([
         {
@@ -112,14 +110,12 @@ function addEmployee() {
         {
             name: "role",
             type: "input",
-            message: "Enter the employees role ID",
-            // choices: ["1","2"]//chooseRole()
+            message: "Enter the employees role ID"
         },
         {
             name: "manager",
             type: "input",
-            message: "What is the employees manager ID?",
-            // choices:["1","2"] //chooseManager()
+            message: "What is the employee ID of this persons manager?"
         },
     ])
     .then (function(val) {
@@ -139,47 +135,23 @@ function addEmployee() {
     });
 };
 
-function getEmployeeId(){
-    //make a communcation to db.. grab all employeeid
-    // connection.query("SELECT * FROM employee",
-    // function (err, res) {
-    //     if (err) throw err;
-    //    // console.log(res)
 
-    //     for(var i=0; i<res.length;i++){
-    //         employIdArr.push(res.id)
-    //     }
-    //     return employIdArr;
-    //      //store it into a cleaner array (map)
-    //     //  var employeIdArr = res.map( (curremploy =>({
-    //     //     name: curremploy.first_name + " "+ curremploy.last_name,
-    //     //    value:curremploy.id  
-    //     //  })))
-    //     //  return employeIdArr;
-      
-    // });
 
-   
- 
-
-   
-    
-}
 
 function updateEmployee() {
     inquirer.prompt([
-        {
-            name: "roleId",
-            type: "input",
-            message: "Choose a role"
-        },
         {
             name: "employeeId",
             type: "input",
             message: "Enter the employees ID"
         },
+        {
+            name: "roleId",
+            type: "input",
+            message: "Choose a role"
+        },
+        
     ]).then(function(data){
-        console.log(data)
         var query = connection.query(
             "UPDATE employee SET ? WHERE ?",
             [
@@ -192,45 +164,18 @@ function updateEmployee() {
             ],
             function(err, res) {
               if (err) throw err;
-              console.log("employee updated!");
+              console.log("Employee updated!");
               mainMenu();
             }
           );
         
     })
-    //get employeeID
-    //  connection.query("SELECT * FROM employee",
-    // function (err, res) {
-    //     if (err) throw err;
-    //    // console.log(res)
-    //    for(var i=0;i<res.length;i++){
-    //        employIdArr.push(res.id);
-    //    }
-    //    console.log(employIdArr);
-    // });
-   //console.log(getEmployeeId());
-   //then call inquirer
-   //with id ask all the update q's
-//    var employee= await viewEmployees();
-//    var allEmployee= employee.map(({id, first_name})=>({
-//        name: first_name,
-//        value:id
-//    }));
-
-//    console.log(allEmployee)
     
 };
 
-function showDept() {
-    connection.query("SELECT * FROM department",
-    function (err, res) {
-        if (err) throw err;
-        console.table(res);
-    }
-    )};
+
 
 function addRole() {
-    showDept();
     inquirer.prompt([
         {
             name: "role",
@@ -246,7 +191,6 @@ function addRole() {
             name: "department",
             type: "input",
             message: "Enter the department ID",
-            // choices: ["1","2"]//chooseRole()
         },
     ])
     .then (function(val) {
