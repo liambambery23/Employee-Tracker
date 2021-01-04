@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const ctable = require("console.table");
 const { start } = require("repl");
-var employIdArr=[];
+var departArr=[];
 
 
 const connection = mysql.createConnection ({
@@ -69,7 +69,7 @@ function mainMenu() {
 };
 
 function viewEmployees() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
     function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -87,35 +87,15 @@ function viewRoles() {
 };
 
 function viewDepartments() {
-    connection.query("SELECT * FROM department",
+    connection.query("SELECT MIN(id) AS id, name FROM department GROUP BY name",
     function (err, res) {
-        if (err) throw err;
-        console.table(res);
+        if (err) throw err
+        console.table(res);;
         mainMenu();
     })
 };
 
-let roleArray = [];
-function chooseRole() {
-    connection.query("SELECT * FROM role_id", function (err, res) {
-        if (err) throw err;
-        for (let i = 0; i < res.length; i++) {
-            roleArray.push(res[i].id);
-        }
-    });
-    return roleArray;
-}
 
-let managersArray = [];
-function chooseManager() {
-    connection.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NOT NULL", function (err, res) {
-        if (err) throw err;
-        for (let i =0; i < res.length; i++) {
-            managersArray.push(res[i].manager_id);
-        }
-    });
-    return managersArray;
-};
 //make sure to create manager id and role id prior to creating employee
 function addEmployee() {
     inquirer.prompt([
