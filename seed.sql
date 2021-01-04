@@ -21,14 +21,14 @@ INSERT INTO role (title, salary, department_id)
 VALUE ("Product Specialist", 35000, 3);
 
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Frank", "Stabapolis", 1, 1);
+VALUE ("Frank", "Stabapolis", null, 1);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Winston", "Johnson", null, 2);
+VALUE ("Winston", "Johnson", 1, 2);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("John", "Kuhlman", 2, 3);
+VALUE ("John", "Kuhlman", null, 3);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Liam", "Bambery", null, 4);
+VALUE ("Liam", "Bambery", 3, 4);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Jason", "Herlack", 3, 5);
+VALUE ("Jason", "Herlack", null, 5);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Lizzy", "Mueller", null, 6);
+VALUE ("Lizzy", "Mueller", 5, 6);
